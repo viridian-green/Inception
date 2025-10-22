@@ -1,0 +1,85 @@
+networks:
+  inception:
+    name: inception
+
+services:
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb/.
+    image: mariadb:42
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - inception
+    env_file:
+      - .env
+    environment:
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_ROOT_PASSWORD_FILE:  /run/secrets/mysql_root_password
+    secrets:
+      - mysql_password
+      - mysql_root_password
+    restart: always
+
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress/.
+    image: wordpress:42
+    volumes:
+      - wordpress:/var/www/html
+    depends_on: 
+      - mariadb
+    networks:
+      - inception
+    env_file:
+      - .env
+    environment:
+      WP_ADMIN_FILE: /run/secrets/wp_admin_password
+      MYSQL_PASSWORD_FILE:  /run/secrets/mysql_password
+      WP_USR_PWD_FILE:  /run/secrets/wp_usr_password
+    secrets:
+      - wp_admin_password
+      - mysql_password
+      - wp_usr_password
+    restart: always
+
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx/.
+    image: nginx:42
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress:/var/www/html   
+    networks:
+      - inception
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - "443:443"
+
+volumes:
+  mariadb:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ademarti/data/mariadb
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ademarti/data/wordpress
+
+secrets:
+  mysql_root_password:
+    file: ../secrets/mysql_root_password
+  mysql_password:
+    file: ../secrets/mysql_password
+  wp_admin_password:
+    file: ../secrets/wp_admin_password
+  wp_usr_password:
+    file: ../secrets/wp_usr_password
+
