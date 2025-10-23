@@ -2,7 +2,7 @@
 set -e
 echo "Starting MariaDB setup..."
 
-#Load passwords from secrets 
+#Load passwords from secrets
 MYSQL_ROOT_PASSWORD=$(cat /run/secrets/mysql_root_password)
 MYSQL_PASSWORD=$(cat /run/secrets/mysql_password)
 echo "Passwords loaded from secrets"
@@ -48,19 +48,13 @@ CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
 DROP USER IF EXISTS '${MYSQL_USER}'@'%';
 DROP USER IF EXISTS '${MYSQL_USER}'@'localhost';
 DROP USER IF EXISTS '${MYSQL_USER}'@'wordpress';
-DROP USER IF EXISTS '${MYSQL_USER}'@'inception-wordpress-1';
-DROP USER IF EXISTS '${MYSQL_USER}'@'inception-wordpress-1.inception';
 CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
 CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';
 CREATE USER '${MYSQL_USER}'@'wordpress' IDENTIFIED BY '${MYSQL_PASSWORD}';
-CREATE USER '${MYSQL_USER}'@'inception-wordpress-1' IDENTIFIED BY '${MYSQL_PASSWORD}';
-CREATE USER '${MYSQL_USER}'@'inception-wordpress-1.inception' IDENTIFIED BY '${MYSQL_PASSWORD}';
 -- Grant privileges to all hosts
 GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
 GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';
 GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'wordpress';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'inception-wordpress-1';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'inception-wordpress-1.inception';
 -- Ensure root can connect from localhost and anywhere
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';

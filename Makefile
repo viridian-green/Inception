@@ -39,7 +39,6 @@ clean:
 
 # Full clean including volumes
 fclean: clean
-	docker volume prune -f
 	sudo rm -rf $(DATA_DIR)
 
 # Rebuild everything

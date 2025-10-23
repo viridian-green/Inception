@@ -27,7 +27,7 @@ services:
     image: wordpress:42
     volumes:
       - wordpress:/var/www/html
-    depends_on: 
+    depends_on:
       - mariadb
     networks:
       - inception
@@ -50,7 +50,7 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - wordpress:/var/www/html   
+      - wordpress:/var/www/html
     networks:
       - inception
     env_file:
